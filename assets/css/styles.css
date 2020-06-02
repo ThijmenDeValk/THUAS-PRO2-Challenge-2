@@ -13,9 +13,155 @@
     color: #ccc;
 }
 
+html, body {
+    margin: 0;
+}
 body {
     background: #222;
     color: #ccc;
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 500;
+}
+
+.bar {
+    display: flex;
+    height: 30vh;
+    justify-content: center;
+}
+
+.clock__holder * {
+    opacity: 0;
+    transition: opacity .15s;
+}
+.clock__holder .show {
+    opacity: 1;
+}
+
+.clock {
+    position: relative;
+}
+.clock--main {
+    height: 70vh;
+}
+.clock--main .clock__holder {
+    width: 70vw; 
+    height: 70vw;
+    max-height: 70vh;
+    max-width: 70vh;
+}
+.clock--secondary {
+    height: 25vh;
+    min-width: 25vh;
+}
+.clock--secondary .clock__holder {
+    width: 25vw; 
+    height: 25vw;
+    max-height: 25vh;
+    max-width: 25vh;
+}
+.clock__holder {
+    margin: auto;
+    position: absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    overflow: hidden;
+}
+.clock__hand {
+    width: 1rem;
+    border-radius: .5rem .5rem 0 0;
+    background: #fff;
+    position: absolute;
+    left: 50%;
+    bottom: 50%;
+    top: 25%;
+    margin-left: -.5rem;
+    z-index: 4;
+    transform: rotate(var(--rotation));
+    transform-origin: bottom center;
+    transition: transform .2s ease, opacity 1s;
+} 
+.clock__hand--second {
+    z-index: 2;
+    width: .25rem !important;
+    margin-left: -.125rem !important;
+    background: #f00;
+    top: 5%;
+}
+.clock__hand--minute {
+    z-index: 3;
+    top: 10%;
+}
+.clock__center {
+    top:50%;
+    left:50%;
+    margin: -1rem 0 0 -1rem;
+    position: absolute;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 1rem;
+    background: #fff;
+    z-index: 5;
+}
+.clock__number {
+    --rotation: 0;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: rotate(var(--rotation));
+    display: flex;
+    justify-content: center;
+    padding: 5% 0;
+}
+.clock__number--01 {
+    --rotation: 30deg;
+}
+.clock__number--02 {
+    --rotation: 60deg;
+}
+.clock__number--03 {
+    --rotation: 90deg;
+}
+.clock__number--04 {
+    --rotation: -30deg;
+}
+.clock__number--05 {
+    --rotation: -60deg;
+}
+.clock__number--06 {
+    --rotation: -90deg;
+}
+.clock__number--bottom {
+    align-items: flex-end;
+}
+
+.clock__timezone {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 70%;
+    text-transform: uppercase;
+    color: #666;
+}
+.clock--main .clock__timezone {
+    font-size: 1.25rem;
+}
+
+.clock--secondary .clock__hand {
+    width: .5rem;
+    margin-left: -.25rem;
+}
+.clock--secondary .clock__center {
+    margin: -.5rem 0 0 -.5rem;
+    position: absolute;
+    width: 1rem;
+    height: 1rem;
+}
+
+/* Used by JS to prevent ugly jumps in transitions when going from 360deg to 0deg */
+.animation-disabled {
+    transition: none !important;
 }

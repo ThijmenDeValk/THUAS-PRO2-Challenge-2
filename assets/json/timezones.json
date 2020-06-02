@@ -1,0 +1,19 @@
+{
+    "timezones": {
+        "AMS": {
+            "name": "Amsterdam, NL",
+            "planet": "earth",
+            "offset": 2
+        },
+        "SF": {
+            "name": "Hawthorne, CA",
+            "planet": "earth",
+            "offset": -7
+        },
+        "UTC": {
+            "name": "UTC",
+            "planet": "earth",
+            "offset": 0
+        }
+    }
+}
