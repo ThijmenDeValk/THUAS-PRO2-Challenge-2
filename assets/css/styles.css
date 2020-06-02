@@ -23,12 +23,14 @@ body {
     font-weight: 500;
 }
 
+/* Place the small clocks side by side */
 .bar {
     display: flex;
     height: 30vh;
     justify-content: center;
 }
 
+/* Have a nice fade in for all clocks */
 .clock__holder * {
     opacity: 0;
     transition: opacity .15s;
@@ -37,6 +39,8 @@ body {
     opacity: 1;
 }
 
+/* Actually style the various clocks */
+/* Both the hands and numbers on the dial use a CSS variable to move around */
 .clock {
     position: relative;
 }
@@ -69,6 +73,7 @@ body {
     overflow: hidden;
 }
 .clock__hand {
+    --rotation: 0;
     width: 1rem;
     border-radius: .5rem .5rem 0 0;
     background: #fff;
@@ -138,10 +143,12 @@ body {
     align-items: flex-end;
 }
 
+/* The timezone is a <select> element, so it needs some extra love to look okay */
 .clock__timezone {
     position: absolute;
     width: 100%;
     text-align: center;
+    text-align: -webkit-center;
     text-align-last: center;
     top: 70%;
     text-transform: uppercase;
@@ -176,6 +183,7 @@ body {
     font-size: 1.25rem;
 }
 
+/* Small tweaks to the small clocks */
 .clock--secondary .clock__hand {
     width: .5rem;
     margin-left: -.25rem;

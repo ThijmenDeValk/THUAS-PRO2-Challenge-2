@@ -97,7 +97,6 @@ class Clock {
     this.timeOfDay = null;
 
     this.counter = null;
-    const self = this;
   }
 
   /**
@@ -123,7 +122,7 @@ class Clock {
    * Fade in the clock
    */
   animateIn() {
-    // Wait just 200ms to hide the ugly 'getting ready' flashes
+    // Wait just 1000ms to hide the ugly 'getting ready' flashes
     setTimeout(() => {
       // Fade in every part of the clock one by one
       const clockItems = this.element.querySelectorAll('.clock__holder *');
