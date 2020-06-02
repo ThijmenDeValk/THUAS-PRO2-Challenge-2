@@ -2,3 +2,20 @@
  *  SPACEX Big Martian Dome Clock
  *  MADE BY THIJMEN
  */
+
+/*  General settings first */
+* {
+    box-sizing: border-box;
+}
+
+::selection {
+    background: #666;
+    color: #ccc;
+}
+
+body {
+    background: #222;
+    color: #ccc;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+}
