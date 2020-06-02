@@ -186,12 +186,20 @@ class Clock {
 
     if ((hour >= 18 || hour < 6) && this.timeOfDay !== 'night') {
       const timeOfDayElement = this.element.querySelector('.clock__timeOfDay');
+      // For the night transition, we might collide with the first
+      // animation if we display too quickly, so we just don't animate
+      let delay = 500;
+      if (!timeOfDayElement.classList.contains('show')) {
+        delay = 0;
+      }
       timeOfDayElement.classList.remove('show');
       this.timeOfDay = 'night';
       setTimeout(() => {
         timeOfDayElement.classList.add('night');
-        timeOfDayElement.classList.add('show');
-      }, 500);
+        if (delay > 0) {
+          timeOfDayElement.classList.add('show');
+        }
+      }, delay);
     }
     if ((hour >= 6 && hour < 18) && this.timeOfDay !== 'day') {
       const timeOfDayElement = this.element.querySelector('.clock__timeOfDay');
