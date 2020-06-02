@@ -1,11 +1,26 @@
 {
     "timezones": {
+        "SYD": {
+            "name": "Sydney, AU",
+            "planet": "earth",
+            "offset": 10
+        },
         "AMS": {
             "name": "Amsterdam, NL",
             "planet": "earth",
             "offset": 2
         },
-        "SF": {
+        "LDN": {
+            "name": "Amsterdam, NL",
+            "planet": "earth",
+            "offset": 1
+        },
+        "WDC": {
+            "name": "Washington DC",
+            "planet": "earth",
+            "offset": -4
+        },
+        "CAL": {
             "name": "Hawthorne, CA",
             "planet": "earth",
             "offset": -7

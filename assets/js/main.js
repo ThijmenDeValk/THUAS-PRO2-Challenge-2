@@ -3,23 +3,41 @@
  *  MADE BY THIJMEN
  *
  *  TABLE OF CONTENTS:
- *  1. DATA
- *  2. HELPER FUNCTIONS
- *  3. INITIALIZE THE SPACECRAFT
- *  4. REFRESH THE UI AND DATA
- *  5. INTERACTION HANDLERS
- *  6. INITIALIZE EVERYTHING
+ *  1. HELPER THINGS
+ *  2. CLOCK CLASS
+ *  3. INITIALIZE
  */
 
-const CLOCK_HTML = '<div class="clock__holder"><div class="clock__number">12</div><div class="clock__number clock__number--01">1</div><div class="clock__number clock__number--02">2</div><div class="clock__number clock__number--03">3</div><div class="clock__number clock__number--05 clock__number--bottom">4</div><div class="clock__number clock__number--04 clock__number--bottom">5</div><div class="clock__number clock__number--bottom">6</div><div class="clock__number clock__number--01 clock__number--bottom">7</div><div class="clock__number clock__number--02 clock__number--bottom">8</div><div class="clock__number clock__number--06">9</div><div class="clock__number clock__number--05">10</div><div class="clock__number clock__number--04">11</div><div class="clock__center"></div><div class="clock__hand clock__hand--hour"></div><div class="clock__hand clock__hand--minute"></div><div class="clock__hand clock__hand--second"></div><div class="clock__timezone"></div><div class="clock__timeOfDay"></div></div>';
+/*
+ * HELPER THINGS
+ */
 
+// HTML for generating the clock
+const CLOCK_HTML = '<div class="clock__holder"><div class="clock__number">12</div><div class="clock__number clock__number--01">1</div><div class="clock__number clock__number--02">2</div><div class="clock__number clock__number--03">3</div><div class="clock__number clock__number--05 clock__number--bottom">4</div><div class="clock__number clock__number--04 clock__number--bottom">5</div><div class="clock__number clock__number--bottom">6</div><div class="clock__number clock__number--01 clock__number--bottom">7</div><div class="clock__number clock__number--02 clock__number--bottom">8</div><div class="clock__number clock__number--06">9</div><div class="clock__number clock__number--05">10</div><div class="clock__number clock__number--04">11</div><div class="clock__center"></div><div class="clock__hand clock__hand--hour"></div><div class="clock__hand clock__hand--minute"></div><div class="clock__hand clock__hand--second"></div><select class="clock__timezone"></select><div class="clock__timeOfDay"></div></div>';
+
+// Array with timezones
 const TIMEZONES = {
+  SYD: {
+    name: 'Sydney, AU',
+    planet: 'earth',
+    offset: 10,
+  },
   AMS: {
     name: 'Amsterdam, NL',
     planet: 'earth',
     offset: 2,
   },
-  SF: {
+  LDN: {
+    name: 'London, UK',
+    planet: 'earth',
+    offset: 1,
+  },
+  WDC: {
+    name: 'Washington DC',
+    planet: 'earth',
+    offset: -4,
+  },
+  CAL: {
     name: 'Hawthorne, CA',
     planet: 'earth',
     offset: -7,
@@ -31,6 +49,7 @@ const TIMEZONES = {
   },
 };
 
+// Helper function to convert a Date object to degrees
 function timeToDegree(time, format) {
   switch (format) {
     case 'hour':
@@ -44,16 +63,22 @@ function timeToDegree(time, format) {
   }
 }
 
+/*
+ *  CLOCK CLASS
+ *  This clock takes care of itself!
+ */
 class Clock {
   /**
    * Create a new clock
    * @param {object} data - Data object with `offset`, `planet` and `name`
    * @param {*} element - DOM element the clock needs to present itself at
    */
-  constructor(data, element) {
-    this.timezone = data.offset;
-    this.planet = data.planet;
-    this.name = data.name;
+  constructor(timezone, element) {
+    const timezoneData = TIMEZONES[timezone];
+    this.timezoneCode = timezone;
+    this.timezone = timezoneData.offset;
+    this.name = timezoneData.name;
+    this.planet = timezoneData.planet;
 
     this.element = element;
 
@@ -72,6 +97,7 @@ class Clock {
     this.timeOfDay = null;
 
     this.counter = null;
+    const self = this;
   }
 
   /**
@@ -84,7 +110,13 @@ class Clock {
     for (const key of Object.keys(this.hands)) {
       this.hands[key] = this.element.querySelector(`.clock__hand--${key}`);
     }
-    this.element.querySelector('.clock__timezone').innerHTML = this.name;
+
+    const timezoneElement = this.element.querySelector('.clock__timezone');
+
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [key, content] of Object.entries(TIMEZONES)) {
+      timezoneElement.innerHTML += `<option name="${key}" ${((this.timezoneCode === key) && 'selected') || ''}>${content.name}</option>`;
+    }
   }
 
   /**
@@ -101,6 +133,15 @@ class Clock {
         }, j * 50);
       });
     }, 200);
+  }
+
+  changeTimezone(element) {
+    const timezone = element.target.selectedOptions[0].attributes.name.value;
+    const timezoneData = TIMEZONES[timezone];
+    this.timezoneCode = timezone;
+    this.timezone = timezoneData.offset;
+    this.name = timezoneData.name;
+    this.planet = timezoneData.planet;
   }
 
   /**
@@ -123,7 +164,6 @@ class Clock {
           element.style.setProperty('--rotation', degree);
         }, delay);
       } else if (this.handsPosition[key] !== '0deg') {
-        console.log(element.style['--rotation']);
         // Do crazy things when we're about to jump to 0, because the dial
         // will circle all the way back 360 degrees (very ugly)
         element.style.setProperty('--rotation', '360deg');
@@ -195,34 +235,33 @@ class Clock {
   }
 
   /**
+   * Start the event listener for changing the timezone
+   */
+  startEventListener() {
+    const timezoneElement = this.element.querySelector('.clock__timezone');
+    timezoneElement.addEventListener('change', this.changeTimezone.bind(this));
+  }
+
+  /**
    * Start running this clock!
    */
   start() {
     this.build();
     this.startCounter();
+    this.startEventListener();
     this.animateIn();
   }
-
-  changeTimezone(data) {
-    this.timezone = data.offset;
-    this.name = data.name;
-    this.planet = data.planet;
-
-    const timezoneElement = this.element.querySelector('.clock__timezone');
-    timezoneElement.classList.remove('show');
-    setTimeout(() => {
-      timezoneElement.innerHTML = this.name;
-      timezoneElement.classList.add('show');
-    }, 500);
-  }
 }
+
+/*
+ * INITIALIZE
+ */
 
 const clockLocations = document.querySelectorAll('section');
 const clocks = [];
 
 clockLocations.forEach((element, i) => {
-  const data = TIMEZONES[element.dataset.timezone];
-  const clock = new Clock(data, element);
+  const clock = new Clock(element.dataset.timezone, element);
   clocks[i] = clock;
   setTimeout(() => {
     clock.start();

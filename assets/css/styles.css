@@ -142,11 +142,23 @@ body {
     position: absolute;
     width: 100%;
     text-align: center;
+    text-align-last: center;
     top: 70%;
     text-transform: uppercase;
-    color: #666;
+    color: rgba(255,255,255,.4);
     margin-top: -.5rem;
     line-height: 1;
+    font: inherit;
+    border: 0;
+    -webkit-appearance: none;
+    background: transparent;
+    transition: opacity .25s, color .15s;
+    z-index: 6;
+    text-shadow: 0 2px 4px rgba(34, 34, 34, .5), 0 3px 32px rgba(34, 34, 34, .5);
+}
+.clock__timezone:hover, .clock__timezone:focus, .clock__timezone:active {
+    color: #fff;
+    outline: 0;
 }
 
 .clock__timeOfDay {
