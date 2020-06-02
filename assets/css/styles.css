@@ -145,6 +145,20 @@ body {
     top: 70%;
     text-transform: uppercase;
     color: #666;
+    margin-top: -.5rem;
+    line-height: 1;
+}
+
+.clock__timeOfDay {
+    position: absolute;
+    top: 25%;
+    width: 100%;
+    height: 10%;
+    background: url('../img/day.svg') no-repeat center center;
+    background-size: contain;
+}
+.clock__timeOfDay.night {
+    background-image: url('../img/night.svg');
 }
 .clock--main .clock__timezone {
     font-size: 1.25rem;

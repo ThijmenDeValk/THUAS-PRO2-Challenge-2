@@ -11,7 +11,7 @@
  *  6. INITIALIZE EVERYTHING
  */
 
-const CLOCK_HTML = '<div class="clock__holder"><div class="clock__number">12</div><div class="clock__number clock__number--01">1</div><div class="clock__number clock__number--02">2</div><div class="clock__number clock__number--03">3</div><div class="clock__number clock__number--05 clock__number--bottom">4</div><div class="clock__number clock__number--04 clock__number--bottom">5</div><div class="clock__number clock__number--bottom">6</div><div class="clock__number clock__number--01 clock__number--bottom">7</div><div class="clock__number clock__number--02 clock__number--bottom">8</div><div class="clock__number clock__number--06">9</div><div class="clock__number clock__number--05">10</div><div class="clock__number clock__number--04">11</div><div class="clock__center"></div><div class="clock__hand clock__hand--hour"></div><div class="clock__hand clock__hand--minute"></div><div class="clock__hand clock__hand--second"></div><div class="clock__timezone"></div></div>';
+const CLOCK_HTML = '<div class="clock__holder"><div class="clock__number">12</div><div class="clock__number clock__number--01">1</div><div class="clock__number clock__number--02">2</div><div class="clock__number clock__number--03">3</div><div class="clock__number clock__number--05 clock__number--bottom">4</div><div class="clock__number clock__number--04 clock__number--bottom">5</div><div class="clock__number clock__number--bottom">6</div><div class="clock__number clock__number--01 clock__number--bottom">7</div><div class="clock__number clock__number--02 clock__number--bottom">8</div><div class="clock__number clock__number--06">9</div><div class="clock__number clock__number--05">10</div><div class="clock__number clock__number--04">11</div><div class="clock__center"></div><div class="clock__hand clock__hand--hour"></div><div class="clock__hand clock__hand--minute"></div><div class="clock__hand clock__hand--second"></div><div class="clock__timezone"></div><div class="clock__timeOfDay"></div></div>';
 
 const TIMEZONES = {
   AMS: {
@@ -30,7 +30,6 @@ const TIMEZONES = {
     offset: 0,
   },
 };
-
 
 function timeToDegree(time, format) {
   switch (format) {
@@ -64,11 +63,13 @@ class Clock {
       second: null,
     };
 
-    this.time = {
-      hour: 0,
-      minute: 0,
-      second: 0,
+    this.handsPosition = {
+      hour: null,
+      minute: null,
+      second: null,
     };
+
+    this.timeOfDay = null;
 
     this.counter = null;
   }
@@ -114,14 +115,15 @@ class Clock {
       let delay = 0;
 
       if (key === 'minute') {
-        delay = 500;
+        delay = 250;
       }
 
       if (degree !== '0deg') {
         setTimeout(() => {
           element.style.setProperty('--rotation', degree);
         }, delay);
-      } else {
+      } else if (this.handsPosition[key] !== '0deg') {
+        console.log(element.style['--rotation']);
         // Do crazy things when we're about to jump to 0, because the dial
         // will circle all the way back 360 degrees (very ugly)
         element.style.setProperty('--rotation', '360deg');
@@ -136,6 +138,30 @@ class Clock {
           }, 100);
         }, 200);
       }
+
+      this.handsPosition[key] = degree;
+    }
+
+    // Animate time of day
+    const hour = time.getUTCHours();
+
+    if ((hour >= 18 || hour < 6) && this.timeOfDay !== 'night') {
+      const timeOfDayElement = this.element.querySelector('.clock__timeOfDay');
+      timeOfDayElement.classList.remove('show');
+      this.timeOfDay = 'night';
+      setTimeout(() => {
+        timeOfDayElement.classList.add('night');
+        timeOfDayElement.classList.add('show');
+      }, 500);
+    }
+    if ((hour >= 6 && hour < 18) && this.timeOfDay !== 'day') {
+      const timeOfDayElement = this.element.querySelector('.clock__timeOfDay');
+      timeOfDayElement.classList.remove('show');
+      this.timeOfDay = 'day';
+      setTimeout(() => {
+        timeOfDayElement.classList.remove('night');
+        timeOfDayElement.classList.add('show');
+      }, 500);
     }
   }
 
@@ -176,13 +202,28 @@ class Clock {
     this.startCounter();
     this.animateIn();
   }
+
+  changeTimezone(data) {
+    this.timezone = data.offset;
+    this.name = data.name;
+    this.planet = data.planet;
+
+    const timezoneElement = this.element.querySelector('.clock__timezone');
+    timezoneElement.classList.remove('show');
+    setTimeout(() => {
+      timezoneElement.innerHTML = this.name;
+      timezoneElement.classList.add('show');
+    }, 500);
+  }
 }
 
-const clocks = document.querySelectorAll('section');
+const clockLocations = document.querySelectorAll('section');
+const clocks = [];
 
-clocks.forEach((element, i) => {
+clockLocations.forEach((element, i) => {
   const data = TIMEZONES[element.dataset.timezone];
   const clock = new Clock(data, element);
+  clocks[i] = clock;
   setTimeout(() => {
     clock.start();
   }, i * 500);
